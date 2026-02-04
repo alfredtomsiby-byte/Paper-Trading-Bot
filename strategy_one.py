@@ -10,9 +10,9 @@ from alpaca.trading.enums import OrderStatus
 #API KEY and API SECRET change depending on which account to use
 
 
-api_KEY = ""  #FOUND ON SPECIFIC ALPACA ACCOUNT
-api_SECRET = ""  #FOUND ON SPECIFIC ALPACA ACCOUNT
-stock_symbol = "KTOS"  #Vary by which Stock to use
+api_KEY = "PKZCWBE2G4KCQ37BU4JF2FZLIN"
+api_SECRET = "GzYKMF3GmnkQbnk7Rpi2xSuRWQDXynMnEifv4Ns891E"
+stock_symbol = "KTOS"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
 data_client = StockHistoricalDataClient(api_KEY, api_SECRET)
@@ -54,8 +54,8 @@ print(f"Purchased {qty_to_buy} shares of {stock_symbol}")
 wait_time = 1 * 24 * 60 * 60   #Change the '1' to changed the number of days
 test_time = 10 #100 seconds and then sell
 
-print(f"Waiting {test_time} seconds before selling...")
-time.sleep(test_time)
+print(f"Waiting {wait_time} seconds before selling...")
+time.sleep(wait_time)
 
 positions = trading_client.get_all_positions()
 stock_position = None
@@ -65,7 +65,7 @@ for position in positions:
         break
 
 if stock_position is None:
-    print("No LMT position found. Nothing to sell.")
+    print(f"No {stock_symbol} position found. Nothing to sell.")
 else:
     qty_to_sell = int(float(stock_position.qty))
 
@@ -82,7 +82,7 @@ else:
 #DETERMING SUCCESS
 # REFRESH ACCOUNT DATA AFTER SELL
 
-update_time = 10 #100 seconds and then sell
+update_time = 5 #100 seconds and then sell
 
 print(f"Waiting {update_time} seconds to see results of your Trade")
 time.sleep(update_time)
@@ -90,7 +90,10 @@ time.sleep(update_time)
 updated_account_data = trading_client.get_account()
 new_cash_available = float(updated_account_data.cash)
 
+# trading_client.close_all_positions() #SELL ALL SHARES
+# print("All positions closed.")
 
+# new_cash_available = float(account_data.cash)
 print(f"New Cash Available: ${new_cash_available}")
 
 if cash_available > new_cash_available :
@@ -99,3 +102,4 @@ elif cash_available < new_cash_available :
     print(f"You MADE ${(new_cash_available - cash_available)}")
 else :
     print(f"Broke Even")
+# #trading_client.close_all_positions()
