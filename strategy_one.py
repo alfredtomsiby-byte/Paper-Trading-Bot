@@ -10,9 +10,9 @@ from alpaca.trading.enums import OrderStatus
 #API KEY and API SECRET change depending on which account to use
 
 
-api_KEY = "PKCCNFGSY5S6KTUYXQKUQ7FWFT"
-api_SECRET = "ztJTx6m2U3BYS2Ah5BfhBsu7tZMkPKPiytz4fM9teE9"
-stock_symbol = "KTOS"
+api_KEY = ""  #FOUND ON SPECIFIC ALPACA ACCOUNT
+api_SECRET = ""  #FOUND ON SPECIFIC ALPACA ACCOUNT
+stock_symbol = "KTOS"  #Vary by which Stock to use
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
 data_client = StockHistoricalDataClient(api_KEY, api_SECRET)
@@ -82,7 +82,7 @@ else:
 #DETERMING SUCCESS
 # REFRESH ACCOUNT DATA AFTER SELL
 
-update_time = 20 #100 seconds and then sell
+update_time = 10 #100 seconds and then sell
 
 print(f"Waiting {update_time} seconds to see results of your Trade")
 time.sleep(update_time)
@@ -90,10 +90,7 @@ time.sleep(update_time)
 updated_account_data = trading_client.get_account()
 new_cash_available = float(updated_account_data.cash)
 
-# trading_client.close_all_positions() #SELL ALL SHARES
-# print("All positions closed.")
 
-# new_cash_available = float(account_data.cash)
 print(f"New Cash Available: ${new_cash_available}")
 
 if cash_available > new_cash_available :
@@ -102,4 +99,3 @@ elif cash_available < new_cash_available :
     print(f"You MADE ${(new_cash_available - cash_available)}")
 else :
     print(f"Broke Even")
-# #trading_client.close_all_positions()
