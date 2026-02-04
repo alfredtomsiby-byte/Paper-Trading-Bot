@@ -10,8 +10,8 @@ from alpaca.data.live import StockDataStream
 from alpaca.data.requests import StockLatestQuoteRequest
 
 
-api_KEY = "PKO3W4TBWJ72ZBQF7V7Y5DKBGX"
-api_SECRET = "DeyB6e8ZM4Y8tpcsjg3La2ZmqxxTGfyUFN1XdY41FHc2"
+api_KEY = ""
+api_SECRET = ""
 lockheed = "LMT"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
@@ -131,4 +131,5 @@ sell_all_lmt()
 #     "APCA-API-SECRET-KEY": api_SECRET
 # }
 # response = requests.get(url, headers=headers)
+
 # print(response.text)
