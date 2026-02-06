@@ -1,3 +1,4 @@
+from datetime import datetime
 import time
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
@@ -9,10 +10,9 @@ from alpaca.trading.enums import OrderStatus
 
 #API KEY and API SECRET change depending on which account to use
 
-
-api_KEY = "PKZCWBE2G4KCQ37BU4JF2FZLIN"
-api_SECRET = "GzYKMF3GmnkQbnk7Rpi2xSuRWQDXynMnEifv4Ns891E"
-stock_symbol = "KTOS"
+api_KEY = "REDACTED" #Specific to an account
+api_SECRET = "REDACTED" #Specific to an account
+stock_symbol = "LMT"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
 data_client = StockHistoricalDataClient(api_KEY, api_SECRET)
@@ -23,7 +23,19 @@ account_data = trading_client.get_account()
 cash_available = float(account_data.cash)
 print(f"Cash Available: ${cash_available}")
 
-#COLLECTING LMT STOCK PRICE and determing amount of LMT shares to BUY
+#Checking if Market is OPEN
+#IF Market is CLOSED, wait until market is OPEN to execute trades
+
+clock = trading_client.get_clock()
+
+if not clock.is_open:
+    time_until_open = (clock.next_open - datetime.utcnow()).total_seconds()
+    print(f"Market is CLOSED. Sleeping for {int(time_until_open)} seconds.")
+    time.sleep(max(time_until_open, 0))
+else:
+    print("Market is OPEN")
+
+#COLLECTING STOCK PRICE and determing amount of shares to BUY
 
 quote_request = StockLatestQuoteRequest(symbol_or_symbols=stock_symbol)
 quote = data_client.get_stock_latest_quote(quote_request)[stock_symbol]
@@ -33,7 +45,7 @@ print(f"{stock_symbol} price: ${price:.2f}")
 
 qty_to_buy = int(cash_available // (price))
 if qty_to_buy <= 0:
-    raise Exception("You are broke, get a job instead of gambling on defense shares")
+    raise Exception("You are broke, get a job instead of gambling on the stock market")
 else :
     print(f"Purchasing {qty_to_buy} shares of {stock_symbol}")
     
@@ -49,13 +61,25 @@ buy_order = MarketOrderRequest(
 trading_client.submit_order(buy_order)
 print(f"Purchased {qty_to_buy} shares of {stock_symbol}")
 
-#SELLING SHARES
+#HOLDING TIME
 
-wait_time = 1 * 24 * 60 * 60   #Change the '1' to changed the number of days
+days_until_sale = 2
+wait_time = (days_until_sale) * 24 * 60 * 60   # dyas * 24 hours * 60 minutes * 60 seconds
+hour_time = 60 * 60
 test_time = 10 #100 seconds and then sell
 
-print(f"Waiting {wait_time} seconds before selling...")
-time.sleep(wait_time)
+for hour in range(24 * days_until_sale):
+    print(f"{hour} hour(s) have passed, waiting {(24 * days_until_sale)-hour} hour(s) until selling")
+    time.sleep(hour_time)
+
+print(f"{(days_until_sale)} day(s) have PASSED, Selling Shares Now")
+
+# print(f"Waiting {wait_time} seconds before selling...")
+# time.sleep(wait_time)
+
+
+
+#SELLING SHARES
 
 positions = trading_client.get_all_positions()
 stock_position = None
@@ -79,8 +103,10 @@ else:
     trading_client.submit_order(sell_order)
     print(f"Sold {qty_to_sell} shares of {stock_symbol}")
 
+
+
 #DETERMING SUCCESS
-# REFRESH ACCOUNT DATA AFTER SELL
+#REFRESH ACCOUNT DATA AFTER SELL
 
 update_time = 5 #100 seconds and then sell
 
@@ -90,10 +116,6 @@ time.sleep(update_time)
 updated_account_data = trading_client.get_account()
 new_cash_available = float(updated_account_data.cash)
 
-# trading_client.close_all_positions() #SELL ALL SHARES
-# print("All positions closed.")
-
-# new_cash_available = float(account_data.cash)
 print(f"New Cash Available: ${new_cash_available}")
 
 if cash_available > new_cash_available :
@@ -102,4 +124,12 @@ elif cash_available < new_cash_available :
     print(f"You MADE ${(new_cash_available - cash_available)}")
 else :
     print(f"Broke Even")
-# #trading_client.close_all_positions()
+
+
+#ALTERNATIVE SELL CODE
+
+
+# trading_client.close_all_positions() #SELL ALL SHARES
+# print("All positions closed.")
+
+# new_cash_available = float(account_data.cash)
