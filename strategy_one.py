@@ -10,12 +10,13 @@ from alpaca.trading.enums import OrderStatus
 
 #API KEY and API SECRET change depending on which account to use
 
-api_KEY = "REDACTED" #Specific to an account
-api_SECRET = "REDACTED" #Specific to an account
-stock_symbol = "LMT"
+api_KEY = "PKYJMWD7EIHKV3EZM5I66PLBUH"
+api_SECRET = "pkiuWYM2x2kBNzijWXTDVNwSciYmgvpeukP1YTrrcJp"
+stock_symbol = "TWI"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
 data_client = StockHistoricalDataClient(api_KEY, api_SECRET)
+clock = trading_client.get_clock()
 
 #ACCOUNT DATA
 
@@ -23,19 +24,19 @@ account_data = trading_client.get_account()
 cash_available = float(account_data.cash)
 print(f"Cash Available: ${cash_available}")
 
-#Checking if Market is OPEN
-#IF Market is CLOSED, wait until market is OPEN to execute trades
+#Checking is Market is OPEN Method
 
-clock = trading_client.get_clock()
-
-if not clock.is_open:
-    time_until_open = (clock.next_open - datetime.utcnow()).total_seconds()
-    print(f"Market is CLOSED. Sleeping for {int(time_until_open)} seconds.")
-    time.sleep(max(time_until_open, 0))
-else:
-    print("Market is OPEN")
+def market_open():
+        clock = trading_client.get_clock()
+        while not clock.is_open:
+            print(f"Market is CLOSED. Sleeping until Market Opens. Updating every 10 seconds")
+            time.sleep(10);
+            clock = trading_client.get_clock()
+        print("Market is OPEN")
 
 #COLLECTING STOCK PRICE and determing amount of shares to BUY
+
+market_open() #Determining if the Market is OPEN
 
 quote_request = StockLatestQuoteRequest(symbol_or_symbols=stock_symbol)
 quote = data_client.get_stock_latest_quote(quote_request)[stock_symbol]
@@ -47,7 +48,7 @@ qty_to_buy = int(cash_available // (price))
 if qty_to_buy <= 0:
     raise Exception("You are broke, get a job instead of gambling on the stock market")
 else :
-    print(f"Purchasing {qty_to_buy} shares of {stock_symbol}")
+    print(f"Attempting to purchase {qty_to_buy} shares of {stock_symbol}")
     
 #BUYING SHARES
 
@@ -58,28 +59,25 @@ buy_order = MarketOrderRequest(
     time_in_force = TimeInForce.DAY
 )
 
+
 trading_client.submit_order(buy_order)
-print(f"Purchased {qty_to_buy} shares of {stock_symbol}")
+print(f"Successfully Purchased {qty_to_buy} shares of {stock_symbol}")
 
 #HOLDING TIME
 
 days_until_sale = 2
-wait_time = (days_until_sale) * 24 * 60 * 60   # dyas * 24 hours * 60 minutes * 60 seconds
-hour_time = 60 * 60
-test_time = 10 #100 seconds and then sell
+wait_time = (days_until_sale) * 24 * 60 * 60   # days * 24 hours * 60 minutes * 60 seconds
 
-for hour in range(24 * days_until_sale):
-    print(f"{hour} hour(s) have passed, waiting {(24 * days_until_sale)-hour} hour(s) until selling")
-    time.sleep(hour_time)
 
-print(f"{(days_until_sale)} day(s) have PASSED, Selling Shares Now")
-
-# print(f"Waiting {wait_time} seconds before selling...")
-# time.sleep(wait_time)
-
+print(f"Waiting {days_until_sale} days before selling...")
+time.sleep(wait_time)
 
 
 #SELLING SHARES
+market_open()
+
+
+print(f"Selling all available {stock_symbol} positions")
 
 positions = trading_client.get_all_positions()
 stock_position = None
@@ -108,7 +106,7 @@ else:
 #DETERMING SUCCESS
 #REFRESH ACCOUNT DATA AFTER SELL
 
-update_time = 5 #100 seconds and then sell
+update_time = 15 #100 seconds and then sell
 
 print(f"Waiting {update_time} seconds to see results of your Trade")
 time.sleep(update_time)
