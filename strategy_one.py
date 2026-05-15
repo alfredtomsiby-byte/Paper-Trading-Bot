@@ -16,7 +16,6 @@ stock_symbol = "TWI"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
 data_client = StockHistoricalDataClient(api_KEY, api_SECRET)
-clock = trading_client.get_clock()
 
 #ACCOUNT DATA
 
