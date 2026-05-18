@@ -10,8 +10,8 @@ from alpaca.trading.enums import OrderStatus
 
 #API KEY and API SECRET change depending on which account to use
 
-api_KEY = "PKYJMWD7EIHKV3EZM5I66PLBUH"
-api_SECRET = "pkiuWYM2x2kBNzijWXTDVNwSciYmgvpeukP1YTrrcJp"
+api_KEY = ""
+api_SECRET = ""
 stock_symbol = "TWI"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
@@ -28,9 +28,23 @@ print(f"Cash Available: ${cash_available}")
 def market_open():
         clock = trading_client.get_clock()
         while not clock.is_open:
-            print(f"Market is CLOSED. Sleeping until Market Opens. Updating every 10 seconds")
-            time.sleep(10);
-            clock = trading_client.get_clock()
+            next_open = clock.next_open
+            now = clock.timestamp
+
+            if next_open.tzinfo:
+                now = now.replace(tzinfo=next_open.tzinfo)
+            
+            seconds_until_open = (next_open - now).total_seconds()
+            hours_until_open = seconds_until_open / 3600
+            print(f"Market is CLOSED")
+            print(f"Will open at: {next_open}")
+            print(f"That's in {hours_until_open:.1f} hours ({int(seconds_until_open)} seconds)")
+            print(f"Sleeping until market opens...")
+            time.sleep(max(seconds_until_open, 0))
+          # SINGLE SLEEP until Market Opens
+            
+        
+        print("✅ Market should be open now!")
         print("Market is OPEN")
 
 #COLLECTING STOCK PRICE and determing amount of shares to BUY
@@ -123,7 +137,7 @@ else :
     print(f"Broke Even")
 
 
-#ALTERNATIVE SELL CODE
+#ALTERNATIVE SELL CODE, SELL ALL POSITIONS
 
 
 # trading_client.close_all_positions() #SELL ALL SHARES
