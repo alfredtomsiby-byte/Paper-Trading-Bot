@@ -39,8 +39,10 @@ def market_open():
             print(f"Market is CLOSED")
             print(f"Will open at: {next_open}")
             print(f"That's in {hours_until_open:.1f} hours ({int(seconds_until_open)} seconds)")
-            print(f"Sleeping until market opens...")
-            time.sleep(max(seconds_until_open, 0))
+            print(f"Sleeping until market opens + 20 seconds...")
+            time.sleep(max(seconds_until_open + 20, 0))
+
+            clock = trading_client.get_clock()
           # SINGLE SLEEP until Market Opens
             
         
