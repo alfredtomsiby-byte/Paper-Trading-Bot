@@ -1,3 +1,7 @@
+import sys
+
+print(sys.executable)
+
 from datetime import datetime
 import time
 from alpaca.trading.client import TradingClient
@@ -10,8 +14,8 @@ from alpaca.trading.enums import OrderStatus
 
 #API KEY and API SECRET change depending on which account to use
 
-api_KEY = ""
-api_SECRET = ""
+api_KEY = "PKYJMWD7EIHKV3EZM5I66PLBUH"
+api_SECRET = "pkiuWYM2x2kBNzijWXTDVNwSciYmgvpeukP1YTrrcJp"
 stock_symbol = "TWI"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
@@ -146,3 +150,6 @@ else :
 # print("All positions closed.")
 
 # new_cash_available = float(account_data.cash)
+
+
+    
