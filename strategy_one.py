@@ -14,8 +14,8 @@ from alpaca.trading.enums import OrderStatus
 
 #API KEY and API SECRET change depending on which account to use
 
-api_KEY = "PKYJMWD7EIHKV3EZM5I66PLBUH"
-api_SECRET = "pkiuWYM2x2kBNzijWXTDVNwSciYmgvpeukP1YTrrcJp"
+api_KEY = ""
+api_SECRET = ""
 stock_symbol = "TWI"
 
 trading_client = TradingClient(api_KEY , api_SECRET, paper=True) 
