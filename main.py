@@ -7,7 +7,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 import re
 import time
 import sys
-import strategy_one #PIZZA Index Strategy
 
 
 def get_spike_with_selenium():
@@ -55,8 +54,11 @@ while True:
 
     if spike > 200:
         print("Time to Invest in DEFENSE SHARES, the Pizza Index Spike is over 200%")   
+        
         #INSERT BUY CODE
+        import strategy_one
         strategy_one.run_strategy()
+        #THIS BUY CODE seems to work but is ugly, like idk why
 
         days_of_sleep = 7
         print(f"Pausing Trades for {days_of_sleep} days")
